@@ -2,4 +2,6 @@
 *.aux
 *.out
 *.synctex.gz
+*.fls
+*.fdb_latexmk
 *.pdf
