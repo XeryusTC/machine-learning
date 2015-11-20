@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 
 class HareAndHoundsBoard:
+    HOUND = 0
+    HARE  = 1
     def __init__(self, width=5):
         if not(width >= 5 and width % 2 == 1):
             raise ValueError('The board width should be of odd size and' \
@@ -41,6 +43,12 @@ class HareAndHoundsBoard:
         if pos in self.hounds:
             res = [p for p in res if p[0] >= x]
         return res
+
+    def player_moves(self, player):
+        if player == self.HOUND:
+            return {hound: possible_moves(hound) for hound in self.hounds}
+        elif player == self.HARE:
+            return possible_moves(self, self.hare)
 
     def __str__(self):
         res = ''
