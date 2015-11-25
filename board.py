@@ -32,7 +32,7 @@ class HareAndHoundsBoard:
             if p in ((0,0), (0, 2), (self.width-1, 0), (self.width-1, 2)):
                 continue
             # filter diagonal moves on squares
-            if (x + (y % 2)) == 0:
+            if ((x + y) % 2) == 0:
                 if abs(x - p[0]) == 1 and abs(y - p[1]) == 1:
                     continue
             # filter the position of other pieces
@@ -49,6 +49,16 @@ class HareAndHoundsBoard:
             return {hound: possible_moves(hound) for hound in self.hounds}
         elif player == self.HARE:
             return possible_moves(self, self.hare)
+
+    def move(self, origin, new):
+        if new not in self.possible_moves(origin):
+            raise self.InvalidMoveException('New position is not reachable')
+
+        if origin in self.hounds:
+            self.hounds = [h for h in self.hounds if h != origin]
+            self.hounds.append(new)
+        else:
+            self.hare = new
 
     def __str__(self):
         res = ''
@@ -80,6 +90,9 @@ class HareAndHoundsBoard:
                 res += '| / \n'
         return res
 
+    class InvalidMoveException(Exception):
+        pass
+
 
 if __name__ == '__main__':
     hah = HareAndHoundsBoard(7)
@@ -88,3 +101,11 @@ if __name__ == '__main__':
     print((0, 1), hah.possible_moves((0, 1)))
     print((1, 2), hah.possible_moves((1, 2)))
     print((6, 1), hah.possible_moves((6, 1)))
+    hah.move((6, 1), (5, 1))
+    print((5, 1), hah.possible_moves((5, 1)))
+    hah.move((5, 1), (4, 1))
+    print((4, 1), hah.possible_moves((4, 1)))
+    print(hah)
+    hah.move((4, 1), (3, 0))
+    print((3, 0), hah.possible_moves((3, 0)))
+    print(hah)
