@@ -78,7 +78,8 @@ class HareAndHoundsBoard:
 
                 if (x + ((y + 1) % 2)) != (self.width - 1):
                     res += ' - '
-            res += '\n'
+            if y < 2:
+                res += '\n'
             if y == 0:
                 res += '  / '
                 for i in range(int(self.width/2)-1):
