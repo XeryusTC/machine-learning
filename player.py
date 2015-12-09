@@ -69,6 +69,9 @@ class HarePlayer(Player):
         action = self.pick_action(actions)
         self.logger.debug('Best action: {}'.format(action))
 
+        self.last_state = self.state
+        self.last_action = action
+
         self.board.move(self.board.hare, action)
 
 
@@ -82,6 +85,9 @@ class HoundsPlayer(Player):
             for m in self.board.possible_moves(hound)]
         action = self.pick_action(actions)
         self.logger.debug('Best action: {}'.format(action))
+
+        self.last_state = self.state
+        self.last_action = action
 
         self.board.move(action[0], action[1])
 
