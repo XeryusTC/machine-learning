@@ -57,6 +57,7 @@ class HareAndHoundsBoard:
         if origin in self.hounds:
             self.hounds = [h for h in self.hounds if h != origin]
             self.hounds.append(new)
+            self.hounds.sort()
         else:
             self.hare = new
 
