@@ -18,12 +18,36 @@ class GameMaster:
             board = HareAndHoundsBoard(self.width)
             hare = player.HarePlayer(board, 0.9)
             hounds = player.HoundsPlayer(board, 0.9)
+            print(board)
 
-            for i in range(10):
+            for i in range(50):
                 hounds.play()
-                hounds.reward(0)
+                if self.winstate(board) == 'hounds':
+                    hare.reward(-100)
+                    hounds.reward(100)
+                    break
+                else:
+                    hounds.reward(0)
+
                 hare.play()
-                hare.reward(0)
+                if self.winstate(board) == 'hare':
+                    hare.reward(100)
+                    hounds.reward(-100)
+                    break
+                else:
+                    hare.reward(0)
+                print(board)
+            self.logger.info('Winner: {}'.format(self.winstate(board)))
+            print(board)
+
+    def winstate(self, board):
+        # Hare wins if he reaches the left side of the board
+        if board.hare == (0, 1):
+            return 'hare'
+        # Hounds win if the hare can not make any more moves
+        if len(board.possible_moves(board.hare)) == 0:
+            return 'hounds'
+        return None
 
 
 if __name__ == '__main__':

@@ -2,9 +2,11 @@
 
 import logging
 import math as m
+import random
 from board import HareAndHoundsBoard
 
 logger = logging.getLogger(__name__)
+random.seed()
 
 class Player:
     def __init__(self, board, gamma):
@@ -45,15 +47,16 @@ class Player:
         for a in actions:
             d = sum([m.exp(self.getQ(self.state, b) / temp) for b in actions])
             probs[a] = m.exp(self.getQ(self.state, a) / temp) / d
+        self.logger.debug(probs)
 
         # Pick the action with the highest probability
-        best = actions[0]
-        p_best = probs[actions[0]]
+        best = random.choice(actions)
+        p_best = probs[best]
         for a, p in probs.items():
             if p > p_best:
                 best = a
                 p_best = p
-        return a
+        return best
 
 
 class HarePlayer(Player):
@@ -66,6 +69,8 @@ class HarePlayer(Player):
         action = self.pick_action(actions)
         self.logger.debug('Best action: {}'.format(action))
 
+        self.board.move(self.board.hare, action)
+
 
 class HoundsPlayer(Player):
     def __init__(self, *args, **kwargs):
@@ -73,10 +78,12 @@ class HoundsPlayer(Player):
         self.logger = logging.getLogger(__name__ + '.HoundsPlayer')
 
     def play(self):
-        actions = [(hound, tuple(self.board.possible_moves(hound)))
-            for hound in self.board.hounds]
+        actions = [(hound, m) for hound in self.board.hounds
+            for m in self.board.possible_moves(hound)]
         action = self.pick_action(actions)
         self.logger.debug('Best action: {}'.format(action))
+
+        self.board.move(action[0], action[1])
 
 
 if __name__ == '__main__':
