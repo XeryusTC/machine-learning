@@ -9,10 +9,12 @@ logger = logging.getLogger(__name__)
 random.seed()
 
 class Player:
-    def __init__(self, board, gamma):
+    def __init__(self, board, gamma, eta, T=1000, Q={}):
         self.board = board
         self.gamma = gamma
-        self._Q = {}
+        self.eta = eta
+        self.temp = T
+        self._Q = Q
         self.last_action = None
         self.last_state = None
         self.logger = logging.getLogger(__name__ + '.Player')
@@ -21,7 +23,10 @@ class Player:
         raise NotImplementedError()
 
     def reward(self, r):
-        pass
+        # Updating doesn't work without having at least some action on the
+        # next state, so use this trick to create it
+        self.getQ(self.state, 'dummy')
+        self.updateQ(self.last_state, self.last_action, self.state, r)
 
     @property
     def state(self):
@@ -38,16 +43,27 @@ class Player:
                 self._Q[state][action] = 0
             return self._Q[state][action]
 
-    def updateQ(self, state, action, value):
-        pass
+    def updateQ(self, s, a, sprime, reward):
+        # Don't update if we don't know anything about sprime
+        if sprime not in self._Q.keys():
+            return
 
-    def pick_action(self, actions, temp=1000):
+        # Q learing
+        Q = self.getQ(s, a)
+        m = self.getQ(sprime, max(self._Q[sprime],
+            key=lambda k: self._Q[sprime][k]))
+        update = self.eta * (reward + self.gamma * m - Q)
+        self.logger.debug('Q({},{}) update, was {}, becomes {}'.format(s, a,
+            Q, update))
+        self._Q[s][a] = update
+
+    def pick_action(self, actions):
         # Calculate the probabilities (18.11)
         probs = {}
         for a in actions:
-            d = sum([m.exp(self.getQ(self.state, b) / temp) for b in actions])
-            probs[a] = m.exp(self.getQ(self.state, a) / temp) / d
-        self.logger.debug(probs)
+            d = sum([m.exp(self.getQ(self.state, b) / self.temp)
+                for b in actions])
+            probs[a] = m.exp(self.getQ(self.state, a) / self.temp) / d
 
         # Pick the action with the highest probability
         best = random.choice(actions)
@@ -57,6 +73,13 @@ class Player:
                 best = a
                 p_best = p
         return best
+
+    def printQ(self):
+        """Prints only significant values from Q"""
+        for s in self._Q:
+            for a in self._Q[s]:
+                if self.getQ(s, a) != 0:
+                    print(s, '\t', a, '\t', self.getQ(s, a))
 
 
 class HarePlayer(Player):
