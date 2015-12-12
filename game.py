@@ -62,6 +62,9 @@ class GameMaster:
         #hare.printQ()
 
     def winstate(self, board, hare_move=False):
+        # Hounds win if the hare can not make any more moves
+        if len(board.possible_moves(board.hare)) == 0:
+            return 'hounds'
         # Hare wins if it is to the left of all hounds
         if all([board.hare[0] < h[0] for h in board.hounds]):
             return 'hare'
@@ -72,9 +75,6 @@ class GameMaster:
         if not hare_move and \
                 sum([len(board.possible_moves(h)) for h in board.hounds]) == 0:
             return 'hare'
-        # Hounds win if the hare can not make any more moves
-        if len(board.possible_moves(board.hare)) == 0:
-            return 'hounds'
         return None
 
 
