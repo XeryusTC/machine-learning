@@ -6,6 +6,8 @@ import json
 import logging
 import sys
 
+logger = logging.getLogger(__name__ + '.trainer')
+
 class Config:
     def __init__(self, widths, gammas, etas, runs):
         self.widths = widths
@@ -18,13 +20,13 @@ def train(config):
         for gamma in config.gammas:
             for width in config.widths:
                 for eta in config.etas:
-                    print("Training gamma: {} width: {} eta: {}"
+                    logger.info("Training gamma: {} width: {} eta: {}"
                             .format(gamma, width, eta))
                     gm = GameMaster(width, gamma, eta, True)
                     gm.run(config.runs)
     except Exception as ex:
-        print("Exception during training:")
-        print(ex)
+        logger.error("Exception during training:")
+        logger.error(ex)
 
 def main(fileName):
     try:
@@ -44,6 +46,13 @@ def main(fileName):
 
 if __name__ == "__main__":
     if len(sys.argv) == 2:
+        rootlog = logging.getLogger()
+        rootlog.setLevel(logging.INFO)
+        ch = logging.StreamHandler()
+        ch.setLevel(logging.DEBUG)
+        formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+        ch.setFormatter(formatter)
+        rootlog.addHandler(ch)
         main(sys.argv[1])
     else:
         print("Usage: " + sys.argv[0] + " configfile")
