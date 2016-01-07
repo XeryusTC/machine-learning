@@ -38,11 +38,11 @@ def main(fileName):
                             configDict['runs'])
             train(config)
     except FileNotFoundError as ex:
-        print("The config file \"" + fileName + "\" does not exist")
+        logger.fatal("The config file \"" + fileName + "\" does not exist")
     except KeyError as ex:
-        print("The key \"" + ex.args[0] + "\" cannot be found in the config")
+        logger.fatal("The key \"" + ex.args[0] + "\" cannot be found in the config")
     except Exception as ex:
-        print(ex)
+        logger.fatal(ex)
 
 if __name__ == "__main__":
     if len(sys.argv) == 2:
@@ -56,5 +56,4 @@ if __name__ == "__main__":
         main(sys.argv[1])
     else:
         print("Usage: " + sys.argv[0] + " configfile")
-
 
