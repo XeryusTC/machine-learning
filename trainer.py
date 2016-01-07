@@ -27,7 +27,8 @@ def train(config):
                     Qs = gm.run(config.runs)
                     with open('trainedQs/g{}_w{}_e{}.q'
                             .format(gamma, width, eta), 'wb') as f:
-                        pickle.dump((Qs[0], Qs[1]), f)
+                        pickle.dump(
+                                (gamma, width, eta, config.runs, Qs[0], Qs[1]), f)
     except Exception as ex:
         logger.error("Exception during training:")
         logger.error(ex)
