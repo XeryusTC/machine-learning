@@ -19,7 +19,7 @@ def main(runs):
 
 if len(sys.argv) == 2:
     rootlog = logging.getLogger()
-    rootlog.setLevel(logging.INFO)
+    rootlog.setLevel(logging.ERROR)
     ch = logging.StreamHandler()
     ch.setLevel(logging.DEBUG)
     formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
