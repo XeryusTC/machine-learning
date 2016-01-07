@@ -15,14 +15,12 @@ class GameMaster:
         self.training = training
         self.logger = logging.getLogger(__name__ + '.GameMaster')
 
-    def run(self, runs=1):
+    def run(self, runs=1, hareQ={}, houndsQ={}):
         width = len(str(runs))
         eta = self.eta
         results = {'hare': 0, 'hounds': 0}
         if self.training:
             T = runs
-            hareQ = {}
-            houndsQ = {}
         else:
             T = 1
             # TODO: load hare and hounds Qs
@@ -98,4 +96,4 @@ if __name__ == '__main__':
     rootlog.addHandler(ch)
 
     gm = GameMaster(gamma=0.9, eta=0.5)
-    gm.run(10000)
+    gm.run(100000)
