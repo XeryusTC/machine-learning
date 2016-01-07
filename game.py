@@ -8,7 +8,7 @@ import player
 logger = logging.getLogger(__name__)
 
 class GameMaster:
-    def __init__(self, width=7, gamma=0.9, eta=1, training=True):
+    def __init__(self, width=5, gamma=0.9, eta=1, training=True):
         self.width = width
         self.gamma = gamma
         self.eta = eta
@@ -16,6 +16,9 @@ class GameMaster:
         self.logger = logging.getLogger(__name__ + '.GameMaster')
 
     def run(self, runs=1):
+        width = len(str(runs))
+        eta = self.eta
+        results = {'hare': 0, 'hounds': 0}
         if self.training:
             T = runs
             hareQ = {}
@@ -27,15 +30,15 @@ class GameMaster:
         for i in range(runs):
             self.logger.debug('Starting run {}'.format(i))
             board = HareAndHoundsBoard(self.width)
-            hare = player.HarePlayer(board, self.gamma, self.eta, T, hareQ)
-            hounds = player.HoundsPlayer(board, self.gamma, self.eta, T,
-                houndsQ)
+            hare = player.HarePlayer(board, self.gamma, eta, T, hareQ)
+            hounds = player.HoundsPlayer(board, self.gamma, eta, T, houndsQ)
 
-            for i in range(100):
+            for j in range(100):
                 hounds.play()
                 if self.winstate(board, True) == 'hounds':
                     hare.reward(-100)
                     hounds.reward(100)
+                    results['hounds'] += 1
                     break
                 else:
                     # Give the other player reward so they know what state
@@ -46,20 +49,27 @@ class GameMaster:
                 if self.winstate(board) == 'hare':
                     hare.reward(100)
                     hounds.reward(-100)
+                    results['hare'] += 1
                     break
                 else:
                     hounds.reward(0)
-            self.logger.info('Winner: {}'.format(self.winstate(board)))
+            self.logger.info('{:{width}}/{:{width}} Winner: {}'.format(i, runs,
+                self.winstate(board), width=width))
             # if there is no winner, give both players a penalty
             if self.winstate(board) == None:
                 hare.reward(-50)
                 hounds.reward(-50)
             if self.training:
                 T = T - 1
+                eta = self.eta - (self.eta/runs) * i
                 # Update the Q for next time
                 hareQ = hare._Q
-                houndsQ = houndsQ
+                houndsQ = hounds._Q
         #hare.printQ()
+        if self.training:
+            return hareQ, houndsQ, results
+        else:
+            return results
 
     def winstate(self, board, hare_move=False):
         # Hounds win if the hare can not make any more moves
@@ -87,5 +97,5 @@ if __name__ == '__main__':
     ch.setFormatter(formatter)
     rootlog.addHandler(ch)
 
-    gm = GameMaster()
-    gm.run(1000)
+    gm = GameMaster(gamma=0.9, eta=0.5)
+    gm.run(10000)
