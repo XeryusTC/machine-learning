@@ -6,6 +6,7 @@ from board import HareAndHoundsBoard
 import player
 
 logger = logging.getLogger(__name__)
+REWARD = 1
 
 class GameMaster:
     def __init__(self, width=5, gamma=0.9, eta=1, training=True):
@@ -34,8 +35,8 @@ class GameMaster:
             for j in range(100):
                 hounds.play()
                 if self.winstate(board, True) == 'hounds':
-                    hare.reward(-100)
-                    hounds.reward(100)
+                    hare.reward(-REWARD)
+                    hounds.reward(REWARD)
                     results['hounds'] += 1
                     break
                 else:
@@ -45,8 +46,8 @@ class GameMaster:
 
                 hare.play()
                 if self.winstate(board) == 'hare':
-                    hare.reward(100)
-                    hounds.reward(-100)
+                    hare.reward(REWARD)
+                    hounds.reward(-REWARD)
                     results['hare'] += 1
                     break
                 else:
@@ -55,8 +56,8 @@ class GameMaster:
                 self.winstate(board), width=width))
             # if there is no winner, give both players a penalty
             if self.winstate(board) == None:
-                hare.reward(-50)
-                hounds.reward(-50)
+                hare.reward(-REWARD * .5)
+                hounds.reward(-REWARD * .5)
             if self.training:
                 T = T - 1
                 eta = self.eta - (self.eta/runs) * i

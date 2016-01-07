@@ -56,7 +56,7 @@ class Player:
         update = self.eta * (reward + self.gamma * m - Q)
         self._Q[s][a] = Q + update
         self.logger.debug('Q({},{}) update, was {}, becomes {}'.format(s, a,
-            Q, update))
+            Q, Q + update))
 
     def pick_action(self, actions):
         # Calculate the probabilities (18.11)
