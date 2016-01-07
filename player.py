@@ -50,29 +50,31 @@ class Player:
 
         # Q learing
         Q = self.getQ(s, a)
+        m = 0
         m = self.getQ(sprime, max(self._Q[sprime],
             key=lambda k: self._Q[sprime][k]))
         update = self.eta * (reward + self.gamma * m - Q)
+        self._Q[s][a] = Q + update
         self.logger.debug('Q({},{}) update, was {}, becomes {}'.format(s, a,
             Q, update))
-        self._Q[s][a] = update
 
     def pick_action(self, actions):
         # Calculate the probabilities (18.11)
         probs = {}
+        d = sum([m.exp(self.getQ(self.state, b) / self.temp)
+            for b in actions])
         for a in actions:
-            d = sum([m.exp(self.getQ(self.state, b) / self.temp)
-                for b in actions])
             probs[a] = m.exp(self.getQ(self.state, a) / self.temp) / d
 
         # Pick the action with the highest probability
-        best = random.choice(actions)
-        p_best = probs[best]
+        pick = random.random()
+        total = 0
         for a, p in probs.items():
-            if p > p_best:
-                best = a
-                p_best = p
-        return best
+            total += p
+            if total >= pick:
+                return a
+        print(total)
+        return a
 
     def printQ(self):
         """Prints only significant values from Q"""
@@ -125,8 +127,9 @@ if __name__ == '__main__':
     logger.addHandler(ch)
 
     b = HareAndHoundsBoard(7)
-    p = HarePlayer(b, .9)
+    p = HarePlayer(b, .9, .1)
     p.play()
 
-    p2 = HoundsPlayer(b, .9)
+    p2 = HoundsPlayer(b, .9, .1)
     p2.play()
+    p.reward(100)
