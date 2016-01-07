@@ -4,6 +4,7 @@
 from game import GameMaster
 import json
 import logging
+import pickle
 import sys
 
 logger = logging.getLogger(__name__ + '.trainer')
@@ -23,7 +24,10 @@ def train(config):
                     logger.info("Training gamma: {} width: {} eta: {}"
                             .format(gamma, width, eta))
                     gm = GameMaster(width, gamma, eta, True)
-                    gm.run(config.runs)
+                    Qs = gm.run(config.runs)
+                    with open('trainedQs/g{}_w{}_e{}.q'
+                            .format(gamma, width, eta), 'wb') as f:
+                        pickle.dump((Qs[0], Qs[1]), f)
     except Exception as ex:
         logger.error("Exception during training:")
         logger.error(ex)
