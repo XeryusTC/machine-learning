@@ -6,6 +6,7 @@ import json
 import logging
 import pickle
 import sys
+import traceback
 
 logger = logging.getLogger(__name__ + '.trainer')
 
@@ -17,10 +18,11 @@ class Config:
         self.runs = runs
 
 def train(config):
-    try:
-        for gamma in config.gammas:
-            for width in config.widths:
-                for eta in config.etas:
+    excepts = []
+    for gamma in config.gammas:
+        for width in config.widths:
+            for eta in config.etas:
+                try:
                     logger.info("Training gamma: {} width: {} eta: {}"
                             .format(gamma, width, eta))
                     gm = GameMaster(width, gamma, eta, True)
@@ -29,15 +31,22 @@ def train(config):
                             .format(gamma, width, eta), 'wb') as f:
                         pickle.dump(
                                 (gamma, width, eta, config.runs, Qs[0], Qs[1]), f)
-    except Exception as ex:
-        logger.error("Exception during training:")
-        logger.error(ex)
+                except Exception as ex:
+                    logger.error("Exception during training:")
+                    logger.error(ex)
+                    excepts.append((ex, gamma, width, eta))
+    for (ex, gamma, width, eta) in excepts:
+        print("""exception {}
+during training with config:
+        gamma: {},      eta: {},    width:{}""".format(ex, gamma, width, eta))
+        traceback.print_tb(ex.__traceback__)
+
 
 def main(fileName):
     try:
         with open(fileName, 'r') as configFile:
             configDict = json.load(configFile)
-            config = Config(configDict['width'], 
+            config = Config(configDict['width'],
                             configDict['gamma'],
                             configDict['eta'],
                             configDict['runs'])
