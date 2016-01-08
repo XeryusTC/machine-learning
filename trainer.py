@@ -7,6 +7,8 @@ import logging
 import pickle
 import sys
 import traceback
+import multiprocessing as mp
+import queue
 
 logger = logging.getLogger(__name__ + '.trainer')
 
@@ -17,32 +19,38 @@ class Config:
         self.etas = etas
         self.runs = runs
 
-def train(config):
+def train_worker(q):
+    while 1:
+        try:
+            task = q.get_nowait()
+        except queue.Empty:
+            break
+        width, gamma, eta, runs = task
+        gm = GameMaster(width, gamma, eta, True)
+        Qs = gm.run(runs)
+        with open('trainedQs/g{}_w{}_e{}_r{}.q'.format(gamma, width,
+                eta, runs), 'wb') as f:
+            pickle.dump((gamma, width, eta, runs, Qs[0], Qs[1]), f)
+        q.task_done()
+
+def train(config, num_workers):
     excepts = []
+    queue = mp.JoinableQueue()
     for gamma in config.gammas:
         for width in config.widths:
             for eta in config.etas:
-                try:
-                    logger.info("Training gamma: {} width: {} eta: {}"
-                            .format(gamma, width, eta))
-                    gm = GameMaster(width, gamma, eta, True)
-                    Qs = gm.run(config.runs)
-                    with open('trainedQs/g{}_w{}_e{}.q'
-                            .format(gamma, width, eta), 'wb') as f:
-                        pickle.dump(
-                                (gamma, width, eta, config.runs, Qs[0], Qs[1]), f)
-                except Exception as ex:
-                    logger.error("Exception during training:")
-                    logger.error(ex)
-                    excepts.append((ex, gamma, width, eta))
-    for (ex, gamma, width, eta) in excepts:
-        print("""exception {}
-during training with config:
-        gamma: {},      eta: {},    width:{}""".format(ex, gamma, width, eta))
-        traceback.print_tb(ex.__traceback__)
+                queue.put((width, gamma, eta, config.runs))
+    # stop signals
+    workers = [mp.Process(target=train_worker, args=(queue,))
+        for i in range(num_workers)]
+    [w.start() for w in workers]
 
+    # Wait for work to complete
+    queue.join()
+    queue.close()
+    [w.join() for w in workers]
 
-def main(fileName):
+def main(fileName, workers):
     try:
         with open(fileName, 'r') as configFile:
             configDict = json.load(configFile)
@@ -50,16 +58,17 @@ def main(fileName):
                             configDict['gamma'],
                             configDict['eta'],
                             configDict['runs'])
-            train(config)
+            train(config, workers)
     except FileNotFoundError as ex:
         logger.fatal("The config file \"" + fileName + "\" does not exist")
     except KeyError as ex:
         logger.fatal("The key \"" + ex.args[0] + "\" cannot be found in the config")
     except Exception as ex:
         logger.fatal(ex)
+        traceback.print_exc()
 
 if __name__ == "__main__":
-    if len(sys.argv) == 2:
+    if len(sys.argv) == 3:
         rootlog = logging.getLogger()
         rootlog.setLevel(logging.INFO)
         ch = logging.StreamHandler()
@@ -67,7 +76,7 @@ if __name__ == "__main__":
         formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
         ch.setFormatter(formatter)
         rootlog.addHandler(ch)
-        main(sys.argv[1])
+        main(sys.argv[1], int(sys.argv[2]))
     else:
-        print("Usage: " + sys.argv[0] + " configfile")
+        print("Usage: " + sys.argv[0] + " configfile num_workers")
 
