@@ -39,7 +39,12 @@ class GameMaster:
                     hounds.reward(REWARD)
                     results['hounds'] += 1
                     break
-                else:
+                elif self.winstate(board, True) == 'hare':
+                    hare.reward(REWARD)
+                    hounds.reward(-REWARD)
+                    results['hare'] += 1
+                    break
+                elif j > 0:
                     # Give the other player reward so they know what state
                     # they ended up in after doing their action
                     hare.reward(0)
@@ -49,6 +54,11 @@ class GameMaster:
                     hare.reward(REWARD)
                     hounds.reward(-REWARD)
                     results['hare'] += 1
+                    break
+                elif self.winstate(board) == 'hounds':
+                    hare.reward(-REWARD)
+                    hounds.reward(REWARD)
+                    results['hounds'] += 1
                     break
                 else:
                     hounds.reward(0)
@@ -75,7 +85,7 @@ class GameMaster:
         if len(board.possible_moves(board.hare)) == 0:
             return 'hounds'
         # Hare wins if it is to the left of all hounds
-        if all([board.hare[0] < h[0] for h in board.hounds]):
+        if all([board.hare[0] <= h[0] for h in board.hounds]):
             return 'hare'
         # Hare wins if he reaches the left side of the board
         if board.hare == (0, 1):
