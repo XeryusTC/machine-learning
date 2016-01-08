@@ -69,7 +69,7 @@ class GameMaster:
                 hare.reward(-REWARD * .5)
                 hounds.reward(-REWARD * .5)
             if self.training:
-                T = T - 1
+                T = runs / (i+1)
                 eta = self.eta - (self.eta/runs) * i
                 # Update the Q for next time
                 hareQ = hare._Q
