@@ -6,7 +6,7 @@ from board import HareAndHoundsBoard
 import player
 
 logger = logging.getLogger(__name__)
-REWARD = 1
+REWARD = 500
 
 class GameMaster:
     def __init__(self, width=5, gamma=0.9, eta=1, training=True):
@@ -24,7 +24,6 @@ class GameMaster:
             T = runs
         else:
             T = 1
-            # TODO: load hare and hounds Qs
 
         for i in range(runs):
             self.logger.debug('Starting run {}'.format(i))
@@ -89,6 +88,9 @@ class GameMaster:
             return 'hare'
         # Hare wins if he reaches the left side of the board
         if board.hare == (0, 1):
+            return 'hare'
+        # The hare wins if there is a hound on the right side of the board
+        if (self.width-1, 1) in board.hounds:
             return 'hare'
         # Hare also wins if the hounds can not move
         if not hare_move and \

@@ -55,8 +55,6 @@ class Player:
         self._Q[s][a] = Q + update
         self.logger.debug('Q({},{}) update, was {}, becomes {}'.format(s, a,
             Q, Q + update))
-        if self._Q[s][a] > 1:
-            self.logger.error('Q > 1 for state={} action={}, m={}, Q={}, oldQ={}, Qt+q={}'.format(s, a, m, self._Q[s][a], Q, self._Q[sprime]))
 
     def pick_action(self, actions):
         # Calculate the probabilities (18.11)
