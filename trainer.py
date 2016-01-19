@@ -22,10 +22,12 @@ class Config:
 def train_worker(q):
     while 1:
         try:
-            task = q.get_nowait()
+            task = q.get(True, 1)
         except queue.Empty:
             break
         width, gamma, eta, runs = task
+        logger.warning('Training with gamma {} eta {} width {} runs {}'.format(
+            gamma, eta, width, runs))
         gm = GameMaster(width, gamma, eta, True)
         Qs = gm.run(runs)
         with open('trainedQs/g{}_w{}_e{}_r{}.q'.format(gamma, width,
@@ -70,9 +72,9 @@ def main(fileName, workers):
 if __name__ == "__main__":
     if len(sys.argv) == 3:
         rootlog = logging.getLogger()
-        rootlog.setLevel(logging.INFO)
+        rootlog.setLevel(logging.WARNING)
         ch = logging.StreamHandler()
-        ch.setLevel(logging.DEBUG)
+        ch.setLevel(logging.WARNING)
         formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
         ch.setFormatter(formatter)
         rootlog.addHandler(ch)
