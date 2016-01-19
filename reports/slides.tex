@@ -21,6 +21,23 @@
 % Method  (Xeryus)
 %% Q learning
 %% Experiments
+\section{Method}
+\begin{frame}
+	\frametitle{Method}
+	\begin{itemize}
+		\item Q-learning
+		\item Use annealing
+	\end{itemize}
+	\[ \hat{Q}(s_t, a_t) = \hat{Q}(s_t, a_t) + \eta \left(r_{t+1} + \gamma \max_{a_{t+1}} Q(s_{t+1}, a_{t+1}) - Q(s_t, a_t)\right) \]
+\end{frame}
+
+\begin{frame}
+	\frametitle{Experimental setup}
+	\begin{itemize}
+		\item Train with varying $\gamma, \eta$ to build models
+		\item Compare performance of different models
+	\end{itemize}
+\end{frame}
 
 % Results (Rene)
 %% Statistics for parameters
