@@ -8,7 +8,7 @@ import pickle
 import sys
 
 def main(runs):
-    print('# gamma, eta, width, runs, hareWins, houndWins')
+    print('gamma, eta, width, runs, hareWins, houndWins')
     for p in glob.glob('trainedQs/*.q'):
         with open(p, 'rb') as f:
             (gamma, width, eta, oruns, hareQ, houndQ) = pickle.load(f)
