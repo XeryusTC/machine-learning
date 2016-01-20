@@ -16,6 +16,17 @@
 % Introduction
 %% Explanation Hare and Hounds (Siegrid)
 %% Expectations (Rene)
+
+\begin{frame}
+    \frametitle{Expectations}
+    \begin{itemize}[<+->]
+        \item<1-> Game is studied \pause $\Rightarrow$ know expected outcome
+        \item<3-> Hare wins with a tie
+        \item<4-> Perfect play $\Rightarrow$ hounds win
+        \item<5-> Percentage of wins by hound is indication of performance
+        \item<6-> Policy can also be evaluated
+    \end{itemize}
+\end{frame}
 %% Differences in implementation (Xeryus)
 
 % Method  (Xeryus)
@@ -39,8 +50,47 @@
 	\end{itemize}
 \end{frame}
 
+\section{Results}
 % Results (Rene)
 %% Statistics for parameters
+\begin{frame}
+    \frametitle{Results}
+    \begin{itemize}
+        \item Trained with 56 configurations
+        \item Probability of hound wins as performance
+
+            \phantom{M}
+
+        \item Hare wins in beginning
+        \item Hounds win at the end
+    \end{itemize}
+\end{frame}
+
+\begin{frame}
+    \frametitle{Results}
+    \begin{itemize}[<+->]
+        \item Linear model
+        \item Discount factor (gamma) significant ($8.02 \times 10^-8$)
+        \item Number of training significant ($2.33 \times 10^-7$)
+        \item Learning rate (eta) not significant ($0.281$)
+    \end{itemize}
+\end{frame}
+
+\begin{frame}
+    \centering
+    \includegraphics[width=0.65\textwidth]{r1000.png}
+\end{frame}
+
+\begin{frame}
+    \centering
+    \includegraphics[width=0.65\textwidth]{r10000.png}
+\end{frame}
+
+\begin{frame}
+    \centering
+    \includegraphics[width=0.65\textwidth]{r100000.png}
+\end{frame}
+
 %% Tie in with background
 
 % Discussion (Siegrid)
