@@ -2,6 +2,7 @@ dat <- read.csv('data.csv')
 dat$percHoundwins <- dat$houndWins/(dat$houndWins + dat$hareWins)
 
 gammas <- unique(dat$gamma)
+gammas <- gammas[order(gammas)]
 cols <- c("red", "blue", "green", "orange", "purple", "pink", "black")
 dat <- dat[with(dat, order(eta, gamma)), ]
 for (r in unique(dat$runs)) {
