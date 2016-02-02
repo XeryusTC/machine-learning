@@ -1,0 +1,18 @@
+To learn how to play Hare and Hounds we will use Q-learning\cite{watkins1992q}.
+Each player will be represented by a different Q-table. This means that the
+actions of the hare are separate from those of the three hounds combined. We
+did not opt for using a separate Q-table for each hound because the hounds are
+suppose to be working together as they are the pieces of a single player.
+
+To select the most appropriate action in each state we use the softmax
+function. This means that during training we can move from exploration to
+exploitation easily by adding a temperature parameter. When the temperature
+is infinite then pure exploration is used while it would ensure pure
+exploitation when its value is very small. The action selection function then
+looks as follows
+\[ P(a|s) = \frac{\exp[Q(s,a)/T]}{\sum_{b \in A} \exp[Q(s, b)/T]} \]
+Where $P(a|s)$ is the probability that an action is selected in any state, $A$
+is the set of available actions in a state, $Q(s,a)$ is the value from the
+Q-table for a state-action pair and $T$ is the temperature parameter. During
+training we linearly decrease the temperature by a single degree after every
+game, the final temperature in the last game is one degree.

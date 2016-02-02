@@ -1,9 +1,13 @@
 \documentclass[a4paper]{article}
 
 \usepackage{bnaic}
+\usepackage{hyperref}
+\usepackage[all]{hypcap}
+\usepackage{graphicx}
+\usepackage{float}
 
 \title{Learning to play Hare and Hounds using Q-learning}
-\author{Xeryus Stokkel \and Siegrid Lenting \and Ren\'e Mellema}
+\author{Xeryus Stokkel (s2332795) \and Siegrid Lenting \and Ren\'e Mellema}
 
 \begin{document}
 
@@ -12,13 +16,16 @@
 \section{Introduction}
 \input{introduction}
 
-\section{Method}
+\section{Method}\label{sec:method}
 \input{method}
 
-\section{Results}
+\section{Results}\label{sec:results}
 \input{results}
 
-\section{Discussion}
+\section{Discussion}\label{sec:discussion}
 \input{discussion}
+
+\bibliographystyle{plain}
+\bibliography{literature}
 
 \end{document}
