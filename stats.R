@@ -17,6 +17,7 @@ for (r in unique(dat$runs)) {
   legend("bottomright", legend = gammas,
          col = cols, fill = cols, title = "gamma")
 }
+rm(sdat)
 
 m <- with(dat, lm(percHoundwins ~ gamma + runs + eta))
 summary(m)
