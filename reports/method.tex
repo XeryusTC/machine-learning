@@ -1,43 +1,82 @@
-To learn how to play Hare and Hounds we will use Q-learning\cite{watkins1992q}.
-Each player will have his own different Q-table to store all values. This means that the
-actions of the hare are separate from those of the three hounds combined. We
-did not opt for using a separate Q-table for each hound, because the hounds are
-supposed to be working together as they are the pieces of a single player. Furthermore,
-the states are indifferent to which hound is in which spot. Our state space consists
-of all different positions of the hounds and the hare, where all permutations of hounds are considered the same state.
+To learn how to play Hare and Hounds we will use
+Q-learning\cite{watkins1992q}.  Each player will have his own different
+Q-table to store all values. This means that the actions of the hare are
+separate from those of the three hounds combined. We did not opt for using
+a separate Q-table for each hound, because the hounds are supposed to be
+working together as they are the pieces of a single player. Furthermore,
+the states are indifferent to which hound is in which spot. Our state space
+consists of all different positions of the hounds and the hare, where all
+permutations of hounds are considered the same state.
 
-Each player also has their own set of actions $A$. At each turn, the possible actions
-are generated for the player. To select the most appropriate action we use 
-the softmax function with a temperature. This means that during training we 
-can move from exploration to exploitation. When the temperature is infinite then 
-pure exploration is used while it would ensure pure exploitation when its value 
-is very close to zero. The action selection function then looks as follows
-\[ P(a|s) = \frac{\exp[Q(s,a)/T]}{\sum_{b \in A} \exp[Q(s, b)/T]} \]
-Where $P(a|s)$ is the probability that action $a$ is selected given state $s$, $A$
-is the set of available actions in a state, $Q(s,a)$ is the value from the
-Q-table for a state-action pair $(s,a)$ and $T$ is the temperature parameter. At the start 
-of training, the temperature is equal to the number of games that are played. During
-training we linearly decrease the temperature by a single degree after every
-game, the final temperature in the last game is one degree.
+Each player also has their own set of actions $A$. At each turn, the
+possible actions are generated for the player. To select the most
+appropriate action we use the softmax function with a temperature. This
+means that during training we can move from exploration to exploitation.
+When the temperature is infinite then pure exploration is used while it
+would ensure pure exploitation when its value is very close to zero. The
+action selection function then looks as follows \[ P(a|s) =
+    \frac{\exp[Q(s,a)/T]}{\sum_{b \in A} \exp[Q(s, b)/T]} \] Where $P(a|s)$
+is the probability that action $a$ is selected given state $s$, $A$ is the
+set of available actions in a state, $Q(s,a)$ is the value from the Q-table
+for a state-action pair $(s,a)$ and $T$ is the temperature parameter. At
+the start of training, the temperature is equal to the number of games that
+are played. During training we linearly decrease the temperature by a
+single degree after every game, the final temperature in the last game is
+one degree.
 
-During training, both players are trained against each other using the Q-learning algorithm
-given in \autoref{alg:Qlearning}. The hare and the hounds player will be trained for different
-values for $\eta$ and $\gamma$ using a varying number of games, in order to determine which are the best settings for these parameters. The training results will be discussed in the next section.
+During training, both players are trained against each other using the
+Q-learning algorithm given in Algorithm \autoref{alg:Qlearning}. The hare
+and the hounds player will be trained for different values for $\eta$ and
+$\gamma$ using a varying number of games, in order to determine which are
+the best settings for these parameters. The training results will be
+discussed in the next section.
 
 \begin{algorithm}
 \caption{Q-learning algorithm \cite{alpaydin}}
 \label{alg:Qlearning}
 \begin{algorithmic}[1]
-\State{Initialize all $Q(s, a)$ arbitrarily}
+\State{Initialize all $Q(s, a)$ to 0}
 \ForAll{episodes}
 	\State{Initialize $s$}
 	\Repeat
-		\State{Choose $a$ using policy derived from $Q$, e.g. $\varepsilon$-greedy}
+		\State{Choose $a$ using policy derived from $Q$ using
+                    softmax}
 		\State{Take action $a$, observe $r$ and $s^\prime$}
 		\State{Update $Q(s,a)$:}
-			\State{$Q(s,a)\gets Q(s,a) + \eta(r+\gamma\max_{a^\prime}Q(s^\prime,a^\prime)-Q(s,a))$}
+                \State{$Q(s,a)\gets Q(s,a) +
+                    \eta(r+\gamma\max_{a^\prime}Q(s^\prime,a^\prime)-Q(s,a))$}
 		\State{$s\gets s^\prime$}
 	\Until{$s$ is terminal}
+        \State{Lower $\eta$ and $T$}
 \EndFor
 \end{algorithmic}
 \end{algorithm}
+
+\subsection{Experimental design}
+To test the implementation, we trained the system for multiple sets of
+parameters and used the trained Q values to have the players play multiple
+games against each other. We then kept track of how often each player won
+and used this as our measure of performance. 
+
+The full set of configurations can be found in \autoref{tbl:conf}. These
+configurations were chosen to test a wide range of values of the
+parameters, to get a good insight into the exact effects they would have on
+the algorithm and the end result. 
+
+\begin{table}
+    \centering
+    \caption{Configurations used during training. Each value of a parameter
+        was matched with all other parameters}
+    \label{tbl:conf}
+    \begin{tabular}{l|rrrrrrrr}
+        \hline
+        parameter & \\
+        \hline
+        runs & 100 & 1000 & 10000 & 100000 & 5000000 \\
+        discount factor $\gamma$ & 0.5 & 0.6 & 0.7 & 0.8 & 0.9 & 0.95 &
+        0.99 \\
+        learning rate $\eta$ & 0.01 & 0.05 & 0.1 & 0.15 & 0.2 & 0.25 & 0.3
+        & 0.5 \\
+        \hline
+    \end{tabular}
+\end{table}
