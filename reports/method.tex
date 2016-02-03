@@ -43,14 +43,6 @@ ensures that a player learns how the opponent reacts to a move. After the
 training game is finished then the values for $T$ and $\eta$ are updated and
 we start the next training game.
 
-We train the players with different values of $\eta$ and $\gamma$ for a varying
-number of games. We do not know how many games are needed to for training to
-converge. This also means that we can take a look at how training progresses
-over the training period. After training we test both of the players by letting
-them play against each other for 1000 games. Because we know that the hounds
-player has a slight advantage we expect this player to win the majority of the
-games.
-
 \begin{algorithm}
 \caption{Q-learning algorithm\cite{alpaydin}}
 \label{alg:Qlearning}
@@ -71,15 +63,23 @@ games.
 \end{algorithm}
 
 \subsection{Experimental design}
-To test the implementation, we trained the system for multiple sets of
-parameters and used the trained Q values to have the players play multiple
-games against each other. We then kept track of how often each player won
-and used this as our measure of performance. 
+To test the implementation we trained the system for with different
+configurations of the parameters $\eta$ and $\gamma$ as described above. We
+also have a parameter which we call \emph{runs} which is the number of games
+that are played during training. We use a varying number of \emph{runs}
+because we do not know how many training games are needed for the Q-values to
+converge. At the same time this can also be used to check on training progress.
+The set of configurations can be seen in \autoref{tbl:conf}, we train on each
+permutation of the tree settings to see which parameter settings lead to the
+best results. We use a wider range of settings than is conventional so that we
+can see what the effects of more extreme values are.
 
-The full set of configurations can be found in \autoref{tbl:conf}. These
-configurations were chosen to test a wide range of values of the
-parameters, to get a good insight into the exact effects they would have on
-the algorithm and the end result. 
+We obtain results by letting the trained players play against each other. We
+keep track of how often each player wins over a number of games, the
+proportion of games that a player wins is used as the performance measure. Hare
+and Hounds is slightly biased towards the hounds player, this means that we can
+expect most of the games to be won by the hounds player if the players have
+been trained successfully.
 
 \begin{table}
     \centering
