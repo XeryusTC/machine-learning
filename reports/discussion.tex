@@ -1,0 +1,15 @@
+We can see that after enough training the hounds will always win for most of
+parameter settings. \autoref{fig:r5000000} shows a horizontal line at 1.0 for
+all parameters except when $\gamma = 0.5$. This means that the hounds player
+always wins for each configuration where $\gamma \geq 0.6$. We can thus say
+that these settings are optimal for the hounds player.
+
+From \autoref{fig:dat} we can see that we need about 100 000 games for training
+to converge. We can from \autoref{fig:r10000} that 10 000 games are not enough
+since some combinations of the different parameter configurations are not fully
+horizontal yet, but that most of the configurations do end up in a state where
+hounds always wins. The difference between 100 000 and 5 000 000 games is not
+very large, we can even say that 5 000 000 games is slightly worse for the
+hounds player but better for the hare player since some points are more
+beneficial to the hare player. However this is not a very large difference and
+thus we can conclude that it is not worth the extra training time.
