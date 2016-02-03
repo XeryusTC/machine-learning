@@ -6,36 +6,60 @@ supposed to be working together as they are the pieces of a single player. Furth
 the states are indifferent to which hound is in which spot. Our state space consists
 of all different positions of the hounds and the hare, where all permutations of hounds are considered the same state.
 
-Each player also has their own set of actions $A$. At each turn, the possible actions
-are generated for the player. To select the most appropriate action we use 
-the softmax function with a temperature. This means that during training we 
-can move from exploration to exploitation. When the temperature is infinite then 
-pure exploration is used while it would ensure pure exploitation when its value 
-is very close to zero. The action selection function then looks as follows
+Each player also has their own set of actions $A$. At each turn, the possible
+actions are generated for the player. To select the most appropriate action we
+use  the softmax function with a temperature. This means that during training
+we can move from exploration to exploitation. When the temperature is infinite
+then  pure exploration is used while it would ensure pure exploitation when its
+value is very close to zero. The action selection function then looks as
+follows
 \[ P(a|s) = \frac{\exp[Q(s,a)/T]}{\sum_{b \in A} \exp[Q(s, b)/T]} \]
-Where $P(a|s)$ is the probability that action $a$ is selected given state $s$, $A$
-is the set of available actions in a state, $Q(s,a)$ is the value from the
-Q-table for a state-action pair $(s,a)$ and $T$ is the temperature parameter. At the start 
-of training, the temperature is equal to the number of games that are played. During
-training we linearly decrease the temperature by a single degree after every
-game, the final temperature in the last game is one degree.
+where $P(a|s)$ is the probability that action $a$ is selected given the
+current state $s$, $A$ is the set of available actions in a state, $Q(s,a)$ is
+the value from the Q-table for a state-action pair $(s,a)$ and $T$ is the
+temperature parameter. At the start of training, the temperature is equal to
+the number of games that are played. During training we linearly decrease the
+temperature by a single degree after every game, the final temperature in the
+last game is one degree.
 
-During training, both players are trained against each other using the Q-learning algorithm
-given in \autoref{alg:Qlearning}. The hare and the hounds player will be trained for different
-values for $\eta$ and $\gamma$ using a varying number of games, in order to determine which are the best settings for these parameters. The training results will be discussed in the next section.
+We train both players by letting them play against each other while they have
+the same parameters. The parameters are the learning rate $\eta$ and the
+discount factor $\gamma$. The discount factor is constant during training but
+$\eta$ is gradually lowered to improve conversion to the optimal
+Q-values\cite{alpaydin}. We lower the value of $\eta$ by a constant amount so
+that it equal to zero in the last round of training.
+
+A single round of training consists of both players playing the game until one
+of them wins or they both have played 50 turns but neither has won yet. We call
+this a tie and both players receive a small negative reward. Each player uses
+the current $T, \eta, \gamma$ parameters. The Q-table gets updated after each
+the opponents so that we do not have to remember the moves that we have but we
+do only update the states that have been visited since the outcome of an action
+is non-deterministic. Updating the Q-table after the opponents turn also
+ensures that a player learns how the opponent reacts to a move. After the
+training game is finished then the values for $T$ and $\eta$ are updated and
+we start the next training game.
+
+We train the players with different values of $\eta$ and $\gamma$ for a varying
+number of games. We do not know how many games are needed to for training to
+converge. This also means that we can take a look at how training progresses
+over the training period. After training we test both of the players by letting
+them play against each other for 1000 games. Because we know that the hounds
+player has a slight advantage we expect this player to win the majority of the
+games.
 
 \begin{algorithm}
-\caption{Q-learning algorithm \cite{alpaydin}}
+\caption{Q-learning algorithm\cite{alpaydin}}
 \label{alg:Qlearning}
 \begin{algorithmic}[1]
 \State{Initialize all $Q(s, a)$ arbitrarily}
 \ForAll{episodes}
 	\State{Initialize $s$}
 	\Repeat
-		\State{Choose $a$ using policy derived from $Q$, e.g. $\varepsilon$-greedy}
+		\State{Choose $a$ using policy derived from $Q$ with softmax}
 		\State{Take action $a$, observe $r$ and $s^\prime$}
-		\State{Update $Q(s,a)$:}
-			\State{$Q(s,a)\gets Q(s,a) + \eta(r+\gamma\max_{a^\prime}Q(s^\prime,a^\prime)-Q(s,a))$}
+		\State{$Q(s,a)\gets Q(s,a) + \eta(r + \gamma\max_{a^\prime}
+			Q(s^\prime,a^\prime) - Q(s,a))$}
 		\State{$s\gets s^\prime$}
 	\Until{$s$ is terminal}
 \EndFor
