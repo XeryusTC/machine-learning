@@ -1,18 +1,43 @@
 To learn how to play Hare and Hounds we will use Q-learning\cite{watkins1992q}.
-Each player will be represented by a different Q-table. This means that the
+Each player will have his own different Q-table to store all values. This means that the
 actions of the hare are separate from those of the three hounds combined. We
-did not opt for using a separate Q-table for each hound because the hounds are
-suppose to be working together as they are the pieces of a single player.
+did not opt for using a separate Q-table for each hound, because the hounds are
+supposed to be working together as they are the pieces of a single player. Furthermore,
+the states are indifferent to which hound is in which spot. Our state space consists
+of all different positions of the hounds and the hare, where all permutations of hounds are considered the same state.
 
-To select the most appropriate action in each state we use the softmax
-function. This means that during training we can move from exploration to
-exploitation easily by adding a temperature parameter. When the temperature
-is infinite then pure exploration is used while it would ensure pure
-exploitation when its value is very small. The action selection function then
-looks as follows
+Each player also has their own set of actions $A$. At each turn, the possible actions
+are generated for the player. To select the most appropriate action we use 
+the softmax function with a temperature. This means that during training we 
+can move from exploration to exploitation. When the temperature is infinite then 
+pure exploration is used while it would ensure pure exploitation when its value 
+is very close to zero. The action selection function then looks as follows
 \[ P(a|s) = \frac{\exp[Q(s,a)/T]}{\sum_{b \in A} \exp[Q(s, b)/T]} \]
-Where $P(a|s)$ is the probability that an action is selected in any state, $A$
+Where $P(a|s)$ is the probability that action $a$ is selected given state $s$, $A$
 is the set of available actions in a state, $Q(s,a)$ is the value from the
-Q-table for a state-action pair and $T$ is the temperature parameter. During
+Q-table for a state-action pair $(s,a)$ and $T$ is the temperature parameter. At the start 
+of training, the temperature is equal to the number of games that are played. During
 training we linearly decrease the temperature by a single degree after every
 game, the final temperature in the last game is one degree.
+
+During training, both players are trained against each other using the Q-learning algorithm
+given in \autoref{alg:Qlearning}. The hare and the hounds player will be trained for different
+values for $\eta$ and $\gamma$ using a varying number of games, in order to determine which are the best settings for these parameters. The training results will be discussed in the next section.
+
+\begin{algorithm}
+\caption{Q-learning algorithm \cite{alpaydin}}
+\label{alg:Qlearning}
+\begin{algorithmic}[1]
+\State{Initialize all $Q(s, a)$ arbitrarily}
+\ForAll{episodes}
+	\State{Initialize $s$}
+	\Repeat
+		\State{Choose $a$ using policy derived from $Q$, e.g. $\varepsilon$-greedy}
+		\State{Take action $a$, observe $r$ and $s^\prime$}
+		\State{Update $Q(s,a)$:}
+			\State{$Q(s,a)\gets Q(s,a) + \eta(r+\gamma\max_{a^\prime}Q(s^\prime,a^\prime)-Q(s,a))$}
+		\State{$s\gets s^\prime$}
+	\Until{$s$ is terminal}
+\EndFor
+\end{algorithmic}
+\end{algorithm}
