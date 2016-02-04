@@ -1,5 +1,6 @@
-To learn how to play Hare and Hounds we will use
-Q-learning\cite{watkins1992q}.  Each player will have his own different
+To learn how to play Hare and Hounds we will use a reinforcement learning
+technique called Q-learning\cite{watkins1992q}.
+Each player will have his own different
 Q-table to store all values. This means that the actions of the hare are
 separate from those of the three hounds combined. We did not opt for using
 a separate Q-table for each hound, because the hounds are supposed to be
@@ -10,11 +11,11 @@ permutations of hounds are considered the same state.
 
 Each player also has their own set of actions $A$. At each turn, the possible
 actions are generated for the player. To select the most appropriate action we
-use  the softmax function with a temperature. This means that during training
-we can move from exploration to exploitation. When the temperature is infinite
-then  pure exploration is used while it would ensure pure exploitation when its
-value is very close to zero. The action selection function then looks as
-follows
+use  the softmax function with a temperature parameter. This means that during
+training we can move from exploration to exploitation smoothly. When the
+temperature is infinite then pure exploration is used while it would ensure
+pure exploitation when its value is very close to zero. The action selection
+function looks as follows\cite{alpaydin}
 \[ P(a|s) = \frac{\exp[Q(s,a)/T]}{\sum_{b \in A} \exp[Q(s, b)/T]} \]
 where $P(a|s)$ is the probability that action $a$ is selected given the
 current state $s$, $A$ is the set of available actions in a state, $Q(s,a)$ is
@@ -34,7 +35,7 @@ Q-learning algorithm that is shown in Algorithm \autoref{alg:Qlearning}.
 
 A single round of training consists of both players playing the game until one
 of them wins or they both have played 50 turns but neither has won yet. We call
-this a tie and both players receive a small negative reward. Each player uses
+this a draw and both players receive a small negative reward. Each player uses
 the current $T, \eta, \gamma$ parameters. The Q-table gets updated after each
 the opponents so that we do not have to remember the moves that we have but we
 do only update the states that have been visited since the outcome of an action
@@ -44,7 +45,7 @@ training game is finished then the values for $T$ and $\eta$ are updated and
 we start the next training game.
 
 \begin{algorithm}
-\caption{Q-learning algorithm\cite{alpaydin}}
+\caption{Q-learning algorithm, modified from \cite{alpaydin}}
 \label{alg:Qlearning}
 \begin{algorithmic}[1]
 \State{Initialize all $Q(s, a)$ to 0}
@@ -70,7 +71,7 @@ that are played during training. We use a varying number of \emph{runs}
 because we do not know how many training games are needed for the Q-values to
 converge. At the same time this can also be used to check on training progress.
 The set of configurations can be seen in \autoref{tbl:conf}, we train on each
-permutation of the tree settings to see which parameter settings lead to the
+permutation of the three settings to see which parameter settings lead to the
 best results. We use a wider range of settings than is conventional so that we
 can see what the effects of more extreme values are.
 
@@ -83,8 +84,9 @@ been trained successfully.
 
 \begin{table}
     \centering
-    \caption{Configurations used during training. Each value of a parameter
-        was matched with all other parameters.}
+    \caption{Different values of the parameters that were used for training.
+    	We used all possible combinations of the three parameters for training
+    	and compare the resulting models.}
     \label{tbl:conf}
     \begin{tabular}{l|rrrrrrrr}
         \hline

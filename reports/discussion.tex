@@ -13,3 +13,15 @@ very large, we can even say that 5 000 000 games is slightly worse for the
 hounds player but better for the hare player since some points are more
 beneficial to the hare player. However this is not a very large difference and
 thus we can conclude that it is not worth the extra training time.
+
+Although the game does not have a very large state space because the board is
+so small, it might still take up a large amount of memory to store it. We
+decreased the size of the state space by not considering the hounds to be
+unique. If the position of two hounds is swapped then the state remains the
+same. If we did consider the hounds to be unique then the state would also
+change when we swap the position of two hounds. Another way to decrease the
+size of the state space is by exploiting the symmetry of the board. The board
+is symmetrical horizontally so this means that we could consider states to be
+equal when they are horizontally flipped versions of each other. Removing these
+flipped versions would mean that the state space is also decreased. This might
+also improve learning since there are far fewer states to learn in this case.
