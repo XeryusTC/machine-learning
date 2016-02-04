@@ -25,3 +25,21 @@ is symmetrical horizontally so this means that we could consider states to be
 equal when they are horizontally flipped versions of each other. Removing these
 flipped versions would mean that the state space is also decreased. This might
 also improve learning since there are far fewer states to learn in this case.
+
+Another option to reduce storage complexity is to use one single table for both
+players. In this case the hare player would select an action that would lead
+to the outcome with the lowest reward, i.e. the largest negative value. This
+should not lead to any problems with overlapping actions since the sets of
+actions are disjoint. Our implementation models the possible actions of the
+hounds player as moving a piece from one place to another while the set of
+possible actions of the hare player is moving to a square. The difference
+may be subtle but it means that one player could not possibly accidentally
+pick the action of another player, nor can they update each other's Q-values.
+
+Although we only used softmax to select the action that players should perform
+we could also have opted for $\varepsilon$-greedy where the option to take a
+random action is picked with probability $\varepsilon$, this would be the
+proportion we want to explore. On the other hand the proportion of exploitation
+is $1-\varepsilon$, in that case we pick the best known action. It could be
+interesting to see the effect of using the softmax vs. the $\varepsilon$-greedy
+method would be.
