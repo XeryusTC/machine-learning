@@ -42,7 +42,7 @@ player uses the current $T, \eta, \gamma$ parameters. The Q-table gets
 updated after each turn, including the opponents turn, so that we do not
 have to remember the moves that we have executed. This way we do only
 update the states that have been visited, which is important since the
-outcome of an action is non-deterministic, becaue it is dependent on the
+outcome of an action is non-deterministic, because it is dependent on the
 (unknown) action of the opponent. Updating the Q-table after the opponents
 turn also ensures that a player learns how the opponent reacts to a move.
 After the training game is finished then the values for $T$ and $\eta$ are
