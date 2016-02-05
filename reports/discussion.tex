@@ -43,3 +43,22 @@ proportion we want to explore. On the other hand the proportion of exploitation
 is $1-\varepsilon$, in that case we pick the best known action. It could be
 interesting to see the effect of using the softmax vs. the $\varepsilon$-greedy
 method would be.
+
+It seems that using reinforcement learning to learn to play the game Hound and
+Hare works well. Using Q-learning gives us the results we would expect in
+a decent about of training epochs. There are still interesting things that
+could be done using this technique. In our study, we only compared the
+performance of the hounds against a hare which was trained with the same
+parameters. An interesting thing to test would be to compare a set of
+hounds with different training parameters from the hare, so both players
+might have had different discount factors during training, leading to
+different kinds of behaviors.
+
+Another interesting line of research would be to compare the learned policy
+from Q-learning with the policies found in combinatorial game theory
+\cite{gardner1961second, siegel2005coping}. If these policies are the same,
+then Q-learning does indeed learn the optimal policy, but if they are
+different the reinforcement learning method might not have searched through
+the state space sufficiently enough. On the other hand, Q-learning might
+also find better policy than the combinatorial game theorists have found,
+sparking new research in that area.
