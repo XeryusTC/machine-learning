@@ -1,5 +1,5 @@
 To learn how to play Hare and Hounds we will use a reinforcement learning
-technique called Q-learning\cite{watkins1992q}.
+technique called Q-learning \cite{watkins1992q}.
 Each player will have his own different
 Q-table to store all values. This means that the actions of the hare are
 separate from those of the three hounds combined. We did not opt for using
@@ -15,8 +15,10 @@ use  the softmax function with a temperature parameter. This means that during
 training we can move from exploration to exploitation smoothly. When the
 temperature is infinite then pure exploration is used while it would ensure
 pure exploitation when its value is very close to zero. The action selection
-function looks as follows\cite{alpaydin}
-\[ P(a|s) = \frac{\exp[Q(s,a)/T]}{\sum_{b \in A} \exp[Q(s, b)/T]} \]
+function looks as follows \cite{alpaydin}:
+\begin{equation}
+   P(a|s) = \frac{\exp[Q(s,a)/T]}{\displaystyle\sum_{b \in A} \exp[Q(s, b)/T]}
+\end{equation}
 where $P(a|s)$ is the probability that action $a$ is selected given the
 current state $s$, $A$ is the set of available actions in a state, $Q(s,a)$ is
 the value from the Q-table for a state-action pair $(s,a)$ and $T$ is the
@@ -29,20 +31,22 @@ We train both players by letting them play against each other while they have
 the same parameters. The parameters are the learning rate $\eta$ and the
 discount factor $\gamma$. The discount factor is constant during training but
 $\eta$ is gradually lowered to improve conversion to the optimal
-Q-values\cite{alpaydin}. We lower the value of $\eta$ by a constant amount so
+Q-values \cite{alpaydin}. We lower the value of $\eta$ by a constant amount so
 that it equal to zero in the last round of training. We train using the
 Q-learning algorithm that is shown in Algorithm \autoref{alg:Qlearning}.
 
-A single round of training consists of both players playing the game until one
-of them wins or they both have played 50 turns but neither has won yet. We call
-this a draw and both players receive a small negative reward. Each player uses
-the current $T, \eta, \gamma$ parameters. The Q-table gets updated after each
-the opponents so that we do not have to remember the moves that we have but we
-do only update the states that have been visited since the outcome of an action
-is non-deterministic. Updating the Q-table after the opponents turn also
-ensures that a player learns how the opponent reacts to a move. After the
-training game is finished then the values for $T$ and $\eta$ are updated and
-we start the next training game.
+A single round of training consists of both players playing the game until
+one of them wins or they both have played 50 turns but neither has won yet.
+We call this a draw and both players receive a small negative reward. Each
+player uses the current $T, \eta, \gamma$ parameters. The Q-table gets
+updated after each turn, including the opponents turn, so that we do not
+have to remember the moves that we have executed. This way we do only
+update the states that have been visited, which is important since the
+outcome of an action is non-deterministic, becaue it is dependent on the
+(unknown) action of the opponent. Updating the Q-table after the opponents
+turn also ensures that a player learns how the opponent reacts to a move.
+After the training game is finished then the values for $T$ and $\eta$ are
+updated and we start the next training game.
 
 \begin{algorithm}
 \caption{Q-learning algorithm, modified from \cite{alpaydin}}
@@ -64,7 +68,7 @@ we start the next training game.
 \end{algorithm}
 
 \subsection{Experimental design}
-To test the implementation we trained the system for with different
+To test the implementation we trained the system with different
 configurations of the parameters $\eta$ and $\gamma$ as described above. We
 also have a parameter which we call \emph{runs} which is the number of games
 that are played during training. We use a varying number of \emph{runs}

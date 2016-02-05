@@ -11,21 +11,20 @@ allowed to move one hound per turn to adjacent squares that are to the right,
 either horizontally or diagonally, or to move vertically. The hare can move in
 any direction to an adjacent square. A square can only be occupied by one piece
 at a time. While this game seems to be very simple it actually has quite deep
-strategy.
+strategy \cite{gardner1961second}. 
 
-The game is also known as The Soldier's game, Game of Dwarfs, French Military
-Game or any other regional equivalent. Not all of these variants use the same
-shaped board but we will focus on the board configuration shown in
-\autoref{fig:board}. Other variations include longer or circular boards.
-Some variants of the game also use different rules. Our variant uses a slightly
-altered set of rules from above. Instead of the hounds loosing after stalling
-for ten turns in a row, our game has a maximum length of 50 turns per player.
-When this turn limit is reached the game is considered a draw and neither
-player wins.
-
-It is known that when using the rules described above that the game is biased
-towards the hounds\cite{gardner1961second}. Therefore, we expect the hounds to win all games
-when  both players are fully trained. 
+The game is also known as The Soldier's game, Game of Dwarfs, French
+Military Game or any other regional equivalent. Not all of these variants
+use the same shaped board but we will focus on the board configuration
+shown in \autoref{fig:board}. Other variations include longer or circular
+boards.  Some variants of the game also use different rules. Our variant
+uses a slightly altered set of rules from above. Instead of the hounds
+loosing after stalling for ten turns in a row, our game has a maximum
+length of 50 turns per player.  When this turn limit is reached the game is
+considered a draw and neither player wins.  It is known that when using the
+rules described above that the game is biased towards the
+hounds \cite{gardner1961second}. Therefore, we expect the hounds to win all
+games when  both players are fully trained. 
 
 In this paper we will describe a method of learning to play the game of Hare
 and Hounds using reinforcement learning. The methodology is explained in
@@ -33,9 +32,9 @@ and Hounds using reinforcement learning. The methodology is explained in
 \autoref{sec:results} while final remarks are made in \autoref{sec:discussion}.
 
 \begin{figure}[h]
-	\centering
-	\includegraphics[width=.75\textwidth]{Hare_and_Hounds_board.png}
-	\caption{The game board that Hare and Hounds is played on. The hare player
-		starts on the right while the hounds player starts on the left.}
-	\label{fig:board}
+    \centering
+    \includegraphics[width=.75\textwidth]{Hare_and_Hounds_board.png}
+    \caption{The game board that Hare and Hounds is played on. The hare player
+        starts on the right while the hounds player starts on the left.}
+    \label{fig:board}
 \end{figure}
